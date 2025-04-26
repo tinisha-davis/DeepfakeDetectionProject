@@ -81,7 +81,7 @@ Improve preprocessing techniques
 
 ## UML Diagrams:
 
-![image](https://github.com/user-attachments/assets/edb6d430-4840-4b79-b138-efd0a9801130)
+![UML Diagram](https://github.com/psyminsays/Team-TAPM/blob/main/uml_diagram/hackathon_uml1.png)
 
-![image](https://github.com/user-attachments/assets/7f508280-7785-46c9-b9f2-1c56e80c6992)
+![UML Diagram](https://github.com/psyminsays/Team-TAPM/blob/main/uml_diagram/hackathon_uml2.png)
 
