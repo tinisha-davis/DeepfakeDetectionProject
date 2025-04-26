@@ -1,3 +1,4 @@
+
 # Deepfake Detection Browser Extension
 ### Hack4Impact
 
@@ -11,7 +12,8 @@ The deepfake detection project works as follows:
 Data Preparation: The system extracts faces from videos or processes images, creating a dataset of real and manipulated faces.
 Transfer Learning: The model uses MobileNetV2 (pre-trained on ImageNet) as a feature extractor, then adds custom classification layers on top.
 
-### Project Directory:
+## Project Directory
+
 ```
 deepfake_detector/
 ├── data/
