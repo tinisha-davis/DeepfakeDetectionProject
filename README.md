@@ -77,4 +77,11 @@ Improve preprocessing techniques
 - Use clear and concise language
 - Formate code snippets, tables, and images properly
 - Provide reliable sources for factual claims
-- Be respectful 
+- Be respectful
+
+## UML Diagrams:
+
+![image](https://github.com/user-attachments/assets/edb6d430-4840-4b79-b138-efd0a9801130)
+
+![image](https://github.com/user-attachments/assets/7f508280-7785-46c9-b9f2-1c56e80c6992)
+
