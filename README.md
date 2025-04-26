@@ -85,3 +85,4 @@ Improve preprocessing techniques
 
 ![UML Diagram](https://github.com/psyminsays/Team-TAPM/blob/main/uml_diagram/hackathon_uml2.png)
 
+[awesome deepfake detection](https://github.com/Daisy-Zhang/Awesome-Deepfakes-Detection?tab=readme-ov-file#datasets)
