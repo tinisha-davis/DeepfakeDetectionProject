@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
 
-                resultElement.textContent = "Confidence Rating: ${probability}% | Alert Level ${alertLevel}";
+                resultElement.textContent = `Confidence Rating: ${probability}% | Alert Level ${alertLevel}`;
                 resultElement.classList.add(alertColorClass);
             }, 1500)
         })
