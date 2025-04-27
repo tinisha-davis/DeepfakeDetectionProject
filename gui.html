@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deepfake Detector</title>
+  <style>
+    :root {
+      --primary-color: #4a6da7;
+      --secondary-color: #f5f5f5;
+      --accent-color: #ff5252;
+      --text-color: #333;
+      --border-radius: 8px;
+      --box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      width: 350px;
+      min-height: 450px;
+      background-color: #f9f9f9;
+      color: var(--text-color);
+      overflow-x: hidden;
+    }
+    
+    .container {
+      padding: 16px;
+    }
+    
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background-color: var(--primary-color);
+      color: white;
+      border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .logo img {
+      width: 32px;
+      height: 32px;
+    }
+    
+    .logo h1 {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    .settings-btn {
+      background: transparent;
+      border: none;
+      color: white;
+      cursor: pointer;
+      font-size: 18px;
+    }
+    
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid rgba(0,0,0,0.1);
+      margin-bottom: 16px;
+      background-color: var(--secondary-color);
+    }
+    
+    .tab {
+      padding: 10px 0;
+      flex: 1;
+      text-align: center;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      border-bottom: 3px solid transparent;
+    }
+    
+    .tab.active {
+      border-bottom: 3px solid var(--primary-color);
+      color: var(--primary-color);
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    .scan-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      padding: 20px 0;
+    }
+    
+    .scan-button {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: var(--border-radius);
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: var(--box-shadow);
+    }
+    
+    .scan-button:hover {
+      background-color: #3d5a8a;
+    }
+    
+    .scan-button:disabled {
+      background-color: #b0b0b0;
+      cursor: not-allowed;
+    }
+    
+    .status-container {
+      width: 100%;
+      margin-top: 10px;
+      text-align: center;
+    }
+    
+    .status {
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+    
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background-color: #e0e0e0;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    
+    .progress {
+      height: 100%;
+      background-color: var(--primary-color);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    
+    .results-container {
+      width: 100%;
+    }
+    
+    .results-header {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .results-count {
+      background-color: var(--accent-color);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+    }
+    
+    .result-item {
+      background-color: white;
+      border-radius: var(--border-radius);
+      padding: 12px;
+      margin-bottom: 10px;
+      box-shadow: var(--box-shadow);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .result-thumbnail {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+    
+    .result-details {
+      flex-grow: 1;
+    }
+    
+    .result-title {
+      font-weight: 500;
+      margin-bottom: 4px;
+      font-size: 14px;
+    }
+    
+    .result-location {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 4px;
+    }
+    
+    .result-confidence {
+      font-size: 13px;
+      color: var(--accent-color);
+      font-weight: 500;
+    }
+    
+    .info-container {
+      padding: 0 16px;
+    }
+    
+    .info-section {
+      margin-bottom: 20px;
+    }
+    
+    .info-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--primary-color);
+    }
+    
+    .info-content {
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    
+    .settings-container {
+      padding: 0 16px;
+    }
+    
+    .setting-item {
+      margin-bottom: 16px;
+    }
+    
+    .setting-label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+    
+    .setting-description {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 8px;
+    }
+    
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+    }
+    
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 24px;
+    }
+    
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    
+    input:checked + .slider {
+      background-color: var(--primary-color);
+    }
+    
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+    
+    .sensitivity-slider {
+      width: 100%;
+      margin-top: 10px;
+    }
+    
+    .error-message {
+      padding: 10px;
+      background-color: #ffebee;
+      color: var(--accent-color);
+      border-radius: var(--border-radius);
+      margin-bottom: 15px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 30px 0;
+      color: #666;
+    }
+    
+    .empty-state img {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 16px;
+      opacity: 0.7;
+    }
+    
+    .empty-state-text {
+      font-size: 14px;
+    }
+    
+    .button-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 15px;
+    }
+    
+    .secondary-button {
+      background-color: transparent;
+      color: var(--primary-color);
+      border: 1px solid var(--primary-color);
+      padding: 8px 16px;
+      border-radius: var(--border-radius);
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .secondary-button:hover {
+      background-color: rgba(74, 109, 167, 0.1);
+    }
+    
+    footer {
+      text-align: center;
+      padding: 16px;
+      font-size: 12px;
+      color: #666;
+      border-top: 1px solid rgba(0,0,0,0.1);
+      margin-top: 20px;
+    }
+    
+    /* Animation classes */
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    
+    .pulse {
+      animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes slideIn {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    
+    .slide-in {
+      animation: slideIn 0.3s forwards;
+    }
+    
+    /* Icons */
+    .icon {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xMiwyQTEwLDEwLDAsMSwwLDIyLDEyLDEwLDEwLDAsMCwwLDEyLDJabTAsMThhOCw4LDAsMSwxLDgtOEE4LDgsMCwwLDEsMTIsMjBabTUtOWExLDEsMCwwLDAtMS0xSDEzVjdhMSwxLDAsMCwwLTIsMHYzSDhhMSwxLDAsMCwwLDAsMmgzdjNhMSwxLDAsMCwwLDIsMFYxM2gzQTEsMSwwLDAsMCwxNywxMVoiLz48L3N2Zz4=" alt="Logo">
+      <h1>Deepfake Detector</h1>
+    </div>
+    <button class="settings-btn" id="settings-icon">
+      <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path fill="currentColor" d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z" />
+      </svg>
+    </button>
+  </header>
+  
+  <div class="tabs">
+    <div class="tab active" data-tab="scan">Scan</div>
+    <div class="tab" data-tab="info">Info</div>
+    <div class="tab" data-tab="settings">Settings</div>
+  </div>
+  
+  <div class="container">
+    <!-- Scan Tab -->
+    <div class="tab-content active" id="scan-tab">
+      <div class="scan-container">
+        <button class="scan-button" id="scan-button">
+          <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path fill="currentColor" d="M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9M12,4.5C17,4.5 21.27,7.61 23,12C21.27,16.39 17,19.5 12,19.5C7,19.5 2.73,16.39 1,12C2.73,7.61 7,4.5 12,4.5M3.18,12C4.83,15.36 8.24,17.5 12,17.5C15.76,17.5 19.17,15.36 20.82,12C19.17,8.64 15.76,6.5 12,6.5C8.24,6.5 4.83,8.64 3.18,12Z" />
+          </svg>
+          Scan This Page
+        </button>
+        
+        <div class="status-container" style="display: none;" id="status-container">
+          <p class="status">Scanning images...</p>
+          <div class="progress-bar">
+            <div class="progress" id="scan-progress"></div>
+          </div>
+        </div>
+        
+        <div class="results-container" style="display: none;" id="results-container">
+          <div class="results-header">
+            <span>Detected Deepfakes</span>
+            <span class="results-count" id="results-count">0</span>
+          </div>
+          
+          <div id="results-list">
+            <!-- Results will be populated here -->
+          </div>
+        </div>
+        
+        <div class="empty-state" id="empty-state">
+          <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2NjY2NjYyIgZD0iTTEyLDJBMTAsMTAsMCwxLDAsMjIsMTIsMTAsMTAsMCwwLDAsMTIsMlptMCwxOGE4LDgsMCwxLDEsOC04QTgsOCwwLDAsMSwxMiwyMFptLTEuNCw0LjJhMSwxLDAsMCwxLS43MS0uMjlsLTQtNGExLDEsMCwwLDEsMS40Mi0xLjQybDMuMjksMy4yOSw3LjI5LTcuMjlhMSwxLDAsMCwxLDEuNDIsMS40MmwtOCw4QTEsMSwwLDAsMSwxMC42LDI0LjJaIi8+PC9zdmc+" alt="Empty state">
+          <p class="empty-state-text">No deepfakes detected on this page yet.<br>Click "Scan This Page" to begin detection.</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Info Tab -->
+    <div class="tab-content" id="info-tab">
+      <div class="info-container">
+        <div class="info-section">
+          <h3 class="info-title">What are Deepfakes?</h3>
+          <p class="info-content">Deepfakes are synthetic media where a person's likeness is replaced with someone else's using artificial intelligence. These can appear in images, videos, or audio recordings and are increasingly difficult to distinguish from real content.</p>
+        </div>
+        
+        <div class="info-section">
+          <h3 class="info-title">How Does the Detector Work?</h3>
+          <p class="info-content">This extension uses a deep learning model trained on multiple datasets (FaceForensics++, DFDC, Celeb-DF and more) to analyze facial characteristics that are typically altered in deepfakes. It scans images for inconsistencies in lighting, blending artifacts, and unnatural facial features.</p>
+        </div>
+        
+        <div class="info-section">
+          <h3 class="info-title">False Positives and Negatives</h3>
+          <p class="info-content">No detection system is perfect. This tool may occasionally flag real images as fake (false positives) or miss some deepfakes (false negatives). Use the detection results as guidance rather than definitive proof.</p>
+        </div>
+        
+        <div class="info-section">
+          <h3 class="info-title">How to Stay Safe</h3>
+          <p class="info-content">
+            - Verify information from multiple reliable sources<br>
+            - Be skeptical of sensational or provocative content<br>
+            - Check for inconsistencies in lighting, shadows, and blending<br>
+            - Look for unnatural facial movements in videos<br>
+            - Research the original source of suspicious media
+          </p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Settings Tab -->
+    <div class="tab-content" id="settings-tab">
+      <div class="settings-container">
+        <div class="setting-item">
+          <label class="setting-label">Detection Sensitivity</label>
+          <p class="setting-description">Adjust how sensitive the detector is to potential deepfakes. Higher sensitivity may increase false positives.</p>
+          <input type="range" min="1" max="10" value="5" class="sensitivity-slider" id="sensitivity-slider">
+          <div style="display: flex; justify-content: space-between; font-size: 12px; color: #666;">
+            <span>Low</span>
+            <span>Medium</span>
+            <span>High</span>
+          </div>
+        </div>
+        
+        <div class="setting-item">
+          <label class="setting-label">Automatic Scanning</label>
+          <p class="setting-description">Automatically scan images when you load a new page.</p>
+          <label class="switch">
+            <input type="checkbox" id="auto-scan-toggle">
+            <span class="slider"></span>
+          </label>
+        </div>
+        
+        <div class="setting-item">
+          <label class="setting-label">Show Warning Labels</label>
+          <p class="setting-description">Add visual warning labels to detected deepfakes.</p>
+          <label class="switch">
+            <input type="checkbox" id="warning-toggle" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+        
+        <div class="setting-item">
+          <label class="setting-label">Enable Notifications</label>
+          <p class="setting-description">Receive notifications when deepfakes are detected.</p>
+          <label class="switch">
+            <input type="checkbox" id="notification-toggle" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+        
+        <div class="setting-item">
+          <label class="setting-label">Model Version</label>
+          <p class="setting-description">Current detection model version:</p>
+          <p style="font-size: 14px; margin-top: 5px;">DeepfakeDetector v1.2.0 (MobileNetV2)</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <footer>
+    Deepfake Detector v1.0.0 | Stay Informed, Stay Safe
+  </footer>
+
+  <script>
+    // Tab switching functionality
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        // Remove active class from all tabs
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        // Add active class to clicked tab
+        tab.classList.add('active');
+        
+        // Hide all tab content
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        // Show content for selected tab
+        const tabId = tab.getAttribute('data-tab');
+        document.getElementById(`${tabId}-tab`).classList.add('active');
+      });
+    });
+    
+    // Scan button functionality
+    const scanButton = document.getElementById('scan-button');
+    const statusContainer = document.getElementById('status-container');
+    const resultsContainer = document.getElementById('results-container');
+    const emptyState = document.getElementById('empty-state');
+    const scanProgress = document.getElementById('scan-progress');
+    const resultsList = document.getElementById('results-list');
+    const resultsCount = document.getElementById('results-count');
+    
+    scanButton.addEventListener('click', () => {
+      // Start scanning animation
+      scanButton.disabled = true;
+      emptyState.style.display = 'none';
+      statusContainer.style.display = 'block';
+      resultsContainer.style.display = 'none';
+      
+      // Simulate scanning progress
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += 5;
+        scanProgress.style.width = `${progress}%`;
+        
+        if (progress >= 100) {
+          clearInterval(interval);
+          // Scanning complete
+          setTimeout(() => {
+            statusContainer.style.display = 'none';
+            showResults();
+            scanButton.disabled = false;
+          }, 500);
+        }
+      }, 200);
+      
+      // Trigger the actual scan in the content script
+      chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, {action: "scan"});
+      });
+    });
+    
+    // Mock function to show results (in a real extension, this would get data from the content script)
+    function showResults() {
+      // For demo purposes, we'll show some mock results
+      const mockResults = [
+        {
+          thumbnail: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiPjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0iI2U5ZWNlZiIvPjxjaXJjbGUgY3g9IjEyIiBjeT0iOCIgcj0iNCIgZmlsbD0iI2FiYjViZSIvPjxwYXRoIGQ9Ik0yMCwyMGMwLTQuNDItMy41OC04LTgtOHMtOCwzLjU4LTgsOEgyMHoiIGZpbGw9IiNhYmI1YmUiLz48L3N2Zz4=',
+          title: 'Profile Image',
+          location: 'Main header section',
+          confidence: '94% confidence'
+        },
+        {
+          thumbnail: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiPjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0iI2U5ZWNlZiIvPjxyZWN0IHg9IjYiIHk9IjgiIHdpZHRoPSIxMiIgaGVpZ2h0PSI4IiBmaWxsPSIjYWJiNWJlIi8+PC9zdmc+',
+          title: 'Banner Image',
+          location: 'Article content',
+          confidence: '87% confidence'
+        }
+      ];
+      
+      // Display results
+      if (mockResults.length > 0) {
+        resultsContainer.style.display = 'block';
+        resultsCount.textContent = mockResults.length;
+        
+        // Clear previous results
+        resultsList.innerHTML = '';
+        
+        // Add each result
+        mockResults.forEach(result => {
+          const resultItem = document.createElement('div');
+          resultItem.className = 'result-item slide-in';
+          
+          resultItem.innerHTML = `
+            <img src="${result.thumbnail}" class="result-thumbnail" alt="Thumbnail">
+            <div class="result-details">
+              <div class="result-title">${result.title}</div>
+              <div class="result-location">${result.location}</div>
+              <div class="result-confidence">${result.confidence}</div>
+            </div>
+          `;
+          
+          resultsList.appendChild(resultItem);
+        });
+        
+        // Add button row
+        const buttonRow = document.createElement('div');
+        buttonRow.className = 'button-row';
+        buttonRow.innerHTML = `
+          <button class="secondary-button">View Details</button>
+          <button class="secondary-button">Report False Positive</button>
+        `;
+        resultsList.appendChild(buttonRow);
+      } else {
+        // No results found
+        emptyState.style.display = 'block';
+        emptyState.innerHTML = `
+          <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iIzRjYWY1MCIgZD0iTTEyLDJBMTAsMTAsMCwxLDAsMjIsMTIsMTAsMTAsMCwwLDAsMTIsMlptMCwxOGE4LDgsMCwxLDEsOC04QTgsOCwwLDAsMSwxMiwyMFptLTEuNCw0LjJhMSwxLDAsMCwxLS43MS0uMjlsLTQtNGExLDEsMCwwLDEsMS40Mi0xLjQybDMuMjksMy4yOSw3LjI5LTcuMjlhMSwxLDAsMCwxLDEuNDIsMS40MmwtOCw4QTEsMSwwLDAsMSwxMC42LDI0LjJaIi8+PC9zdmc+" alt="Check icon">
+          <p class="empty-state-text">No deepfakes detected on this page.<br>All images appear to be authentic.</p>
+        `;
+      }
+    }
+    
+    // Initialize settings from storage
+    document.addEventListener('DOMContentLoaded', () => {
+      // In a real extension, we would load saved settings from chrome.storage
+      // For this demo, we'll just use default values
+      document.getElementById('sensitivity-slider').value = 5;
+      document.getElementById('auto-scan-toggle').checked = false;
+      document.getElementById('warning-toggle').checked = true;
+      document.getElementById('notification-toggle').checked = true;
+      
+      // Add event listeners for settings changes
+      document.getElementById('sensitivity-slider').addEventListener('change', saveSettings);
+      document.getElementById('auto-scan-toggle').addEventListener('change', saveSettings);
+      document.getElementById('warning-toggle').addEventListener('change', saveSettings);
+      document.getElementById('notification-toggle').addEventListener('change', saveSettings);
+    });
+    
+    // Save settings to storage
+    function saveSettings() {
+      const settings = {
+        sensitivity: document.getElementById('sensitivity-slider').value,
+        autoScan: document.getElementById('auto-scan-toggle').checked,
+        showWarnings: document.getElementById('warning-toggle').checked,
+        showNotifications: document.getElementById('notification-toggle').checked
+      };
+      
+      // In a real extension, we would save to chrome.storage
+      console.log('Settings saved:', settings);
+      
+      // Send settings to content script
+      chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, {
+          action: "updateSettings",
+          settings: settings
+        });
+      });
+    }
+    
+    // Handle messages from content script
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+      if (message.action === "scanResults") {
+        // A real extension would use these results from the content script
+        console.log('Received scan results:', message.results);
+        // Update UI with results
+        // showActualResults(message.results);
+      }
+    });
+  </script>
+</body>
+</html>

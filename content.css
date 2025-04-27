@@ -1,0 +1,219 @@
+/**
+ * Deepfake Detector Content Styles
+ * Styles for warnings and labels that appear on the webpage
+ */
+
+/* Reset styles to prevent conflicts */
+.deepfake-detector * {
+    all: initial;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+      Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  }
+  
+  /* Warning overlay for detected deepfakes */
+  .deepfake-warning {
+    position: absolute;
+    z-index: 9999;
+    pointer-events: auto;
+    box-sizing: border-box;
+    cursor: pointer;
+    border: 2px solid #ff5252;
+    box-shadow: 0 0 0 2px rgba(255, 82, 82, 0.5);
+    transition: all 0.2s ease;
+  }
+  
+  .deepfake-warning::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 82, 82, 0.2);
+  }
+  
+  /* Warning icon in the corner of detected deepfakes */
+  .deepfake-warning-icon {
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: #ff5252;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+    font-family: Arial, sans-serif;
+    line-height: 1;
+  }
+  
+  /* Tooltip that appears on hover */
+  .deepfake-warning-tooltip {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%) scale(0.9);
+    opacity: 0;
+    width: 220px;
+    background-color: white;
+    border-radius: 4px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+    padding: 12px;
+    pointer-events: none;
+    transition: all 0.2s ease;
+    z-index: 10000;
+    text-align: left;
+  }
+  
+  /* Show tooltip on hover */
+  .deepfake-warning:hover .deepfake-warning-tooltip,
+  .deepfake-warning-expanded .deepfake-warning-tooltip {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+    pointer-events: auto;
+  }
+  
+  /* Tooltip header */
+  .deepfake-warning-header {
+    color: #ff5252;
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 5px;
+    text-align: center;
+  }
+  
+  /* Confidence display */
+  .deepfake-warning-confidence {
+    color: #333;
+    font-size: 12px;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  
+  /* Button container */
+  .deepfake-warning-buttons {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  /* Buttons in the tooltip */
+  .deepfake-warning-button {
+    background-color: #f5f5f5;
+    border: 1px solid #e0e0e0;
+    padding: 6px 12px;
+    border-radius: 3px;
+    font-size: 12px;
+    cursor: pointer;
+    flex: 1;
+    margin: 0 3px;
+    transition: background-color 0.2s ease;
+    color: #333;
+    text-align: center;
+  }
+  
+  .deepfake-warning-button:hover {
+    background-color: #e0e0e0;
+  }
+  
+  /* Detailed analysis popup */
+  .deepfake-analysis-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    width: 500px;
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    z-index: 10001;
+    padding: 20px;
+  }
+  
+  .deepfake-analysis-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .deepfake-analysis-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .deepfake-analysis-close {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #666;
+  }
+  
+  .deepfake-analysis-image {
+    width: 100%;
+    border-radius: 4px;
+    margin-bottom: 15px;
+  }
+  
+  .deepfake-analysis-section {
+    margin-bottom: 15px;
+  }
+  
+  .deepfake-analysis-subtitle {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #4a6da7;
+  }
+  
+  .deepfake-analysis-text {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #333;
+  }
+  
+  /* Backdrop for popups */
+  .deepfake-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 10000;
+  }
+  
+  /* Animation for warnings */
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+  
+  .deepfake-warning-icon {
+    animation: pulse 1.5s infinite;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .deepfake-warning-tooltip {
+      width: 180px;
+    }
+    
+    .deepfake-analysis-popup {
+      width: 95vw;
+    }
+  }
