@@ -16,3 +16,27 @@ button {
 button:hover {
     background-color: #005A9E;
 }
+
+#result {
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.low-alert {
+    color: green;
+}
+
+.moderate-alert {
+    color: yellow;
+}
+
+.high-alert {
+    color: red;
+}
+
+.error-alert {
+    color: darkred;
+    background-color: #ffe0e0;
+    padding: 5px;
+    border-radius: 3px;
+}
