@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 # Deepfake Detection Browser Extension
 ### Hack4Impact
@@ -86,3 +87,7 @@ Improve preprocessing techniques
 ![UML Diagram](https://github.com/psyminsays/Team-TAPM/blob/main/uml_diagram/hackathon_uml2.png)
 
 [awesome deepfake detection](https://github.com/Daisy-Zhang/Awesome-Deepfakes-Detection?tab=readme-ov-file#datasets)
+=======
+# DeepfakeDetectionProject
+Deepfake Detection Browser Extension Project for Hack4Impact
+>>>>>>> cfad6d56af202e1856964046cfed7012a5d0483a
